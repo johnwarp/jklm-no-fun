@@ -43,15 +43,10 @@ def main(room_code):
     driver.quit()       # we're gonna change this to detach later because we don't want the shit to close on us
     print("driver quitted")
 
-# while True:
-#     room_code = input("Input room code: ")
+while True:
+    room_code = input("Input room code: ")
 
-#     if check_room_code(room_code):
-#         break
+    if check_room_code(room_code):
+        break
 
-# main(room_code)
-
-bro = Match_Word()
-word = bro.get_word("NIGGA")
-
-print(word)
+main(room_code)

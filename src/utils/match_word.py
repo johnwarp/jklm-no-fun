@@ -15,3 +15,9 @@ class Match_Word:
         for word in self.word_list:
             if prompt in word:
                 return word
+            
+if __name__ == "__main__":
+    bro = Match_Word()
+    word = bro.get_word("bro")
+
+    print(word)
