@@ -11,6 +11,9 @@ class Gui:
 
         self.quit_button = tk.Button(self.root, text="Quit", font=("Arial", 10), width=25, command=self.root.destroy)
 
-    def run(self):
+    def update(self, new_text):
+        pass
+
+    def display(self):
         self.prompt.pack(padx=self.padding_x, pady=self.padding_y)
         self.quit_button.pack(padx=self.padding_x, pady=self.padding_y)
