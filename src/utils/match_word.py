@@ -1,4 +1,6 @@
 class Match_Word:
+    NUM_WORDS = 3
+
     def __init__(self):
         # initialize a list with all the words in the word bank text file
         with open("src/data/word_bank.txt", "r") as file:
@@ -12,12 +14,22 @@ class Match_Word:
     # TODO return a list include multiple words incase other players have already used that word
     def get_word(self, prompt):
         prompt = prompt.upper()
+        valid_words = []
+
         for word in self.word_list:
+            if word in self.dupes:
+                continue
             if prompt in word:
-                return word
+                valid_words.append(word)
+            if len(valid_words) >= self.NUM_WORDS:
+                return valid_words
+            
+        return valid_words
             
 if __name__ == "__main__":
     bro = Match_Word()
-    word = bro.get_word("bro")
 
-    print(word)
+    user_prompt = input("Enter a prompt: ")
+    words = bro.get_word(user_prompt)
+
+    print(words)

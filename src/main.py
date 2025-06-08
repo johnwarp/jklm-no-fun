@@ -16,12 +16,12 @@ def check_room_code(room_code):
     
     return True
 
-def main(room_code):
+def main():
     # initiate driver and get link
     service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
     driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
 
-    driver.get("https://jklm.fun/" + room_code)
+    driver.get("https://jklm.fun/BUTS")
     print("Opening")
 
     # do some error checking later so that it's idiot proof
@@ -34,8 +34,15 @@ def main(room_code):
     scraper = Scraper(src)
 
     prompt = scraper.get_prompt()
+    print(f"The prompt: {prompt}")
 
-    print(prompt)
+    match_word = Match_Word()
+    possible_words = match_word.get_word(prompt)
+
+    print("List of possible words:")
+
+    for word in possible_words:
+        print(word)
 
     input("Press enter to exit:")
 
@@ -43,10 +50,4 @@ def main(room_code):
     driver.quit()       # we're gonna change this to detach later because we don't want the shit to close on us
     print("driver quitted")
 
-while True:
-    room_code = input("Input room code: ")
-
-    if check_room_code(room_code):
-        break
-
-main(room_code)
+main()
