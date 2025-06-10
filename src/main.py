@@ -17,12 +17,15 @@ def check_room_code(room_code):
     return True
 
 def main():
+    ######################################### set up shit
     # initiate driver and get link
     service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
     driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
 
-    driver.get("https://jklm.fun/BUTS")
+    driver.get("https://jklm.fun/DQDZ")
     print("Opening")
+
+    ######################################### update shit
 
     # do some error checking later so that it's idiot proof
     keyboard.wait("ctrl+alt+t")
@@ -33,18 +36,24 @@ def main():
     src = driver.page_source
     scraper = Scraper(src)
 
-    prompt = scraper.get_prompt()
-    print(f"The prompt: {prompt}")
+    result = scraper.get_prompt()
 
-    match_word = Match_Word()
-    possible_words = match_word.get_word(prompt)
+    if result["error"] == None:
+        prompt = result["prompt"]
+        print(f"The prompt: {prompt}")
 
-    print("List of possible words:")
+        match_word = Match_Word()
+        possible_words = match_word.get_word(prompt)
 
-    for word in possible_words:
-        print(word)
+        print("List of possible words:")
 
-    input("Press enter to exit:")
+        for word in possible_words:
+            print(word)
+
+        input("Press enter to exit:")
+
+    else:
+        print(result["error"])
 
     print("Quitting Driver")
     driver.quit()       # we're gonna change this to detach later because we don't want the shit to close on us
