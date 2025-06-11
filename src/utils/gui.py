@@ -31,9 +31,13 @@ class Gui:
             prompt_dict = self.q.get_nowait()
 
             # parses the dict that includes the prompts and possible words
+            if prompt_dict["error"]:
+                new_words_text = prompt_dict["words"]
+            else:
+                new_words_list = prompt_dict["words"]
+                new_words_text = "List of possible words:\n" + "\n".join(new_words_list)
+
             new_prompt = prompt_dict["prompt"]
-            new_words_list = prompt_dict["words"]
-            new_words_text = "List of possible words:\n" + "\n".join(new_words_list)
 
             self.update(new_prompt, new_words_text)
 

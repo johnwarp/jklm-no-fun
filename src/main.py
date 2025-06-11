@@ -18,38 +18,44 @@ def check_room_code(room_code):
     return True
 
 def scraper_logic(driver, gui):
-    # do some error checking later so that it's idiot proof
-    keyboard.wait("ctrl+alt+t")
-    print("hotkey activated")
+    first_gaming = False
 
-    driver.switch_to.frame(0)       # switches the context to the iframe with the game logic
+    while True:
+        keyboard.wait("ctrl+alt+t")
+        print("hotkey activated")
 
-    # scrape the driver's page source for the prompt
-    src = driver.page_source
-    scraper = Scraper(src)
-    result = scraper.get_prompt()
+        if not first_gaming:
+            driver.switch_to.frame(0)       # switches the context to the iframe with the game logic
+            first_gaming = True
 
-    # checks for errors
-    if result["success"]:
-        # grabs the prompt and possible words
-        prompt = result["data"]
-        match_word = Match_Word()
-        possible_words = match_word.get_word(prompt)
-        print(prompt, possible_words)
+        # scrape the driver's page source for the prompt
+        src = driver.page_source
+        scraper = Scraper(src)
+        result = scraper.get_prompt()
 
-        prompt_dict = {"prompt" : prompt,
-                       "words" : possible_words
-                       }
-    else:
-        print(result["error"])
-        prompt_dict = {"prompt" : result["prompt"],
-                       "words" : result["error"]
-                       }
+        # checks for errors
+        if result["success"]:
+            # grabs the prompt and possible words
+            prompt = result["data"]
+            match_word = Match_Word()
+            possible_words = match_word.get_word(prompt)
+            print(prompt, possible_words)
 
-    # puts the prompt_dict in the gui's queue and schedules an update
-    gui.q.put(prompt_dict)
-    gui.schedule_update()
+            prompt_dict = {"prompt" : prompt,
+                        "words" : possible_words,
+                        "error" : False
+                        }
+        else:
+            print(result["error"])
+            prompt_dict = {"prompt" : result["data"],
+                        "words" : result["error"],
+                        "error" : True
+                        }
 
+        # puts the prompt_dict in the gui's queue and schedules an update
+        gui.q.put(prompt_dict)
+        gui.schedule_update()
+    
 def main():
     ######################################### set up shit
     # initiate driver and get link
@@ -60,7 +66,6 @@ def main():
     print("Opening")
 
     root = tk.Tk()
-
     gui = Gui(root)
 
     ######################################### update shit
