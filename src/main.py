@@ -7,6 +7,8 @@ import tkinter as tk
 import keyboard
 import threading
 
+# TODO: Check for duplicates effectively
+
 def check_room_code(room_code):
     if (len(room_code) != 4):
         return False
