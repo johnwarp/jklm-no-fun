@@ -1,6 +1,7 @@
 import tkinter as tk
 import threading
 import queue
+import time
 
 # queue is used to safely communicate between threads since tkinter is not thread safe
 
@@ -37,26 +38,18 @@ class Gui:
     def schedule_update(self):
         self.root.after_idle(self.process_queue)
 
-    def quit(self):
-        self.root.destroy()
-        print("window destroyed")
-
 def user_input(gui):
     for _ in range(4):
-        prompt = input()
+        prompt = input("Input shit: ")
         gui.q.put(prompt)
         gui.schedule_update()
-
 
 if __name__ == "__main__":
     root = tk.Tk()
     bro = Gui(root)
 
-    def start_input_thread():
-        # takes user input and passes the info into a queue in the tkinter gui object in another thread
-        input_thread = threading.Thread(target=user_input, args=(bro,))
-        input_thread.start()
-
-    root.after(100, start_input_thread)
+    # takes user input and passes the info into a queue in the tkinter gui object in another thread
+    input_thread = threading.Thread(target=user_input, args=(bro,), daemon=True)
+    input_thread.start()
 
     root.mainloop()
