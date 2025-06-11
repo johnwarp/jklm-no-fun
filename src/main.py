@@ -3,8 +3,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from utils import Gui, Match_Word, Scraper
+import tkinter as tk
 import keyboard
-import time
+import threading
 
 def check_room_code(room_code):
     if (len(room_code) != 4):
@@ -16,44 +17,58 @@ def check_room_code(room_code):
     
     return True
 
-def main():
-    ######################################### set up shit
-    # initiate driver and get link
-    service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
-    driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
-
-    driver.get("https://jklm.fun/DQDZ")
-    print("Opening")
-
-    ######################################### update shit
-
+def scraper_logic(driver, gui):
     # do some error checking later so that it's idiot proof
     keyboard.wait("ctrl+alt+t")
     print("hotkey activated")
 
     driver.switch_to.frame(0)       # switches the context to the iframe with the game logic
 
+    # scrape the driver's page source for the prompt
     src = driver.page_source
     scraper = Scraper(src)
-
     result = scraper.get_prompt()
 
-    if result["error"] == None:
-        prompt = result["prompt"]
-        print(f"The prompt: {prompt}")
-
+    # checks for errors
+    if result["success"]:
+        # grabs the prompt and possible words
+        prompt = result["data"]
         match_word = Match_Word()
         possible_words = match_word.get_word(prompt)
+        print(prompt, possible_words)
 
-        print("List of possible words:")
-
-        for word in possible_words:
-            print(word)
-
-        input("Press enter to exit:")
-
+        prompt_dict = {"prompt" : prompt,
+                       "words" : possible_words
+                       }
     else:
         print(result["error"])
+        prompt_dict = {"prompt" : result["prompt"],
+                       "words" : result["error"]
+                       }
+
+    # puts the prompt_dict in the gui's queue and schedules an update
+    gui.q.put(prompt_dict)
+    gui.schedule_update()
+
+def main():
+    ######################################### set up shit
+    # initiate driver and get link
+    service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
+    driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
+
+    driver.get("https://jklm.fun/WVFW")
+    print("Opening")
+
+    root = tk.Tk()
+
+    gui = Gui(root)
+
+    ######################################### update shit
+
+    scraper_thread = threading.Thread(target=scraper_logic, args=(driver, gui), daemon=True)
+    scraper_thread.start()
+
+    root.mainloop()
 
     print("Quitting Driver")
     driver.quit()       # we're gonna change this to detach later because we don't want the shit to close on us
