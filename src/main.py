@@ -1,8 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
-from utils import Gui, Match_Word, Scraper
+from utils import Gui, Match_Word, Scraper, Dupe_Scraper
 import tkinter as tk
 import keyboard
 import threading
@@ -19,16 +17,15 @@ def check_room_code(room_code):
     
     return True
 
-def scraper_logic(driver, gui):
+def scraper_logic(driver, gui, word_matcher):
     first_gaming = True
 
     while True:
         keyboard.wait("ctrl+alt+t")
-        
+
         if first_gaming:
             driver.switch_to.frame(0)       # switches the context to the iframe with the game logic
             scraper = Scraper(driver.page_source)
-            match_word = Match_Word()
             first_gaming = False
 
         # scrape the driver's page source for the prompt
@@ -39,7 +36,7 @@ def scraper_logic(driver, gui):
         if result["success"]:
             # grabs the prompt and possible words
             prompt = result["data"]
-            possible_words = match_word.get_word(prompt)
+            possible_words = word_matcher.get_word(prompt)
             prompt_dict = {"prompt" : prompt,
                         "words" : possible_words,
                         "error" : False
@@ -56,23 +53,46 @@ def scraper_logic(driver, gui):
         # puts the prompt_dict in the gui's queue and schedules an update
         gui.q.put(prompt_dict)
         gui.schedule_update()
-    
+
+def dupe_logic(driver, word_matcher):
+    dupe_scraper = Dupe_Scraper(driver)
+
+    while True:
+        # keyboard.wait("enter")
+        # print("enter clicked")
+
+        event = keyboard.read_event()
+
+        if event.event_type == "up":
+            continue
+
+        duped_word = dupe_scraper.get_dupe()
+        print(duped_word)
+
+        if duped_word == None:
+            continue
+        
+        # word_matcher.update_dupes(duped_word)
+
 def main():
     ######################################### set up shit
     # initiate driver and get link
     service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
     driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
 
-    driver.get("https://jklm.fun/FJFT")
+    driver.get("https://jklm.fun/HWTM")
     print("Opening")
 
     root = tk.Tk()
     gui = Gui(root)
 
+    word_matcher = Match_Word()
     ######################################### update shit
 
-    scraper_thread = threading.Thread(target=scraper_logic, args=(driver, gui), daemon=True)
+    scraper_thread = threading.Thread(target=scraper_logic, args=(driver, gui, word_matcher), daemon=True)
+    get_dupes = threading.Thread(target=dupe_logic, args=(driver, word_matcher), daemon=True)
     scraper_thread.start()
+    get_dupes.start()
 
     root.mainloop()
 

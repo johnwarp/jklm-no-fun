@@ -25,6 +25,9 @@ class Match_Word:
                 return valid_words
             
         return valid_words
+    
+    def update_dupes(self, duped_word):
+        self.dupes.add(duped_word)
             
 if __name__ == "__main__":
     bro = Match_Word()
