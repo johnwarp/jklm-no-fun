@@ -20,29 +20,26 @@ def check_room_code(room_code):
     return True
 
 def scraper_logic(driver, gui):
-    first_gaming = False
+    first_gaming = True
 
     while True:
         keyboard.wait("ctrl+alt+t")
-        print("hotkey activated")
-
-        if not first_gaming:
+        
+        if first_gaming:
             driver.switch_to.frame(0)       # switches the context to the iframe with the game logic
-            first_gaming = True
+            scraper = Scraper(driver.page_source)
+            match_word = Match_Word()
+            first_gaming = False
 
         # scrape the driver's page source for the prompt
-        src = driver.page_source
-        scraper = Scraper(src)
+        scraper.update_src(driver.page_source)
         result = scraper.get_prompt()
 
         # checks for errors
         if result["success"]:
             # grabs the prompt and possible words
             prompt = result["data"]
-            match_word = Match_Word()
             possible_words = match_word.get_word(prompt)
-            print(prompt, possible_words)
-
             prompt_dict = {"prompt" : prompt,
                         "words" : possible_words,
                         "error" : False
@@ -53,6 +50,8 @@ def scraper_logic(driver, gui):
                         "words" : result["error"],
                         "error" : True
                         }
+            driver.switch_to.default_content()
+            first_gaming = True
 
         # puts the prompt_dict in the gui's queue and schedules an update
         gui.q.put(prompt_dict)
@@ -64,7 +63,7 @@ def main():
     service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
     driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
 
-    driver.get("https://jklm.fun/WVFW")
+    driver.get("https://jklm.fun/FJFT")
     print("Opening")
 
     root = tk.Tk()

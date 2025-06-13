@@ -6,6 +6,9 @@ class Scraper:
     def __init__(self, src):
         self.src = src
         self.soup = BeautifulSoup(src, "html.parser")
+
+    def update_src(self, src):
+        self.soup = BeautifulSoup(src, "html.parser")
     
     def get_prompt(self):
         try:
