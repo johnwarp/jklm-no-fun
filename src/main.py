@@ -55,17 +55,15 @@ def scraper_logic(driver, gui, word_matcher):
         gui.schedule_update()
 
 def dupe_logic(driver, word_matcher):
-    dupe_scraper = Dupe_Scraper(driver, word_matcher )
+    dupe_scraper = Dupe_Scraper(driver, word_matcher)
 
     while True:
         event = keyboard.read_event()
 
         if event.event_type == "up":
             continue
-
-        duped_word = dupe_scraper.read_word()
-
-        # word_matcher.update_dupes(duped_word)
+        
+        dupe_scraper.read_word()
 
 def main():
     ######################################### set up shit
@@ -73,7 +71,7 @@ def main():
     service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
     driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
 
-    driver.get("https://jklm.fun/FSHP")
+    driver.get("https://jklm.fun/NFQC")
     print("Opening")
 
     root = tk.Tk()

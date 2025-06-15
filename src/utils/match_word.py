@@ -9,7 +9,7 @@ class Match_Word:
         self.word_list.sort(key=len)
         
         # set that includes duplicate words already used
-        self.dupes = {}
+        self.dupes = set()
     
     # TODO return a list include multiple words incase other players have already used that word
     def get_word(self, prompt):
