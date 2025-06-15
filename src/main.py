@@ -5,7 +5,7 @@ import tkinter as tk
 import keyboard
 import threading
 
-# TODO: Check for duplicates effectively
+# TODO: Give more options, like more variety of words and longer words and stuff
 
 def check_room_code(room_code):
     if (len(room_code) != 4):
@@ -71,7 +71,7 @@ def main():
     service = Service(executable_path="src/chromedriver.exe")   # ensures we are using the chrome driver that's in the directory
     driver = webdriver.Chrome(service=service)  # launches a new instance of chrome and gives the driver object to control it
 
-    driver.get("https://jklm.fun/NFQC")
+    driver.get("https://jklm.fun/")
     print("Opening")
 
     root = tk.Tk()
